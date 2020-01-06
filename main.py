@@ -2,17 +2,23 @@
 
 import argparse
 import pathlib
+from ipaddress import ip_address
 
 def main():
     parser = argparse.ArgumentParser(prog="")
     parser.add_argument('target',
-                        help="Initial worm target")
+                        help="Initial target for worm",
+                        type=ip_address)
     parser.add_argument('-i', '--ignore',
-                        help="IP addr to ignore",
-                        action='extend')
+                        help="IP addr(s) to ignore",
+                        action='extend',
+                        nargs='+',
+                        metavar='safe_ip',
+                        type=ip_address)
 
     args = parser.parse_args()
     print(args)
+
 
 if __name__ == '__main__':
     main()
