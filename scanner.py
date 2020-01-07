@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+from os import system
 import sys
 import socket
 import subprocess
 import re
 import requests
+import time
 
 class scanner:
     def __init__(self):
@@ -26,9 +28,16 @@ class scanner:
             candidate = ip_mask + str(last)
             if candidate != ip_addr:
                 try:
-                    subprocess.check_call(['ping', '-c1', '-i0.1', candidate])
+                    print(f"About to try {candidate}")
+                    start = time.time()
+                    # subprocess.check_call(['ping', '-c1', '-i0.1', candidate])
+                    x = system(f"ping -c1 {candidate} &")
+                    runtime = time.time() - start
+                    print(f"ping took {runtime} seconds")
                 except:
                     pass
+                else:
+                    print(x)
                 possible_targets.append(candidate)
         return possible_targets
 
