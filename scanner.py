@@ -9,7 +9,7 @@ import requests
 class scanner:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        return 0
+        return
 
     def get_self_ip(self):
         curr_platform = sys.platform
@@ -26,7 +26,7 @@ class scanner:
             candidate = ip_mask + str(last)
             if candidate != ip_addr:
                 try:
-                    subprocess.check_call(['ping', '-c1', ip_mask + candidate])
+                    subprocess.check_call(['ping', '-c1', candidate])
                 except:
                     pass
                 possible_targets.append(ip_mask + candidate)
