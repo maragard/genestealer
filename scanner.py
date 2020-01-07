@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-from os import system
 import sys
 import socket
 import subprocess
 import re
-import requests
 
 #basic scanning utility class
 class scanner:
@@ -42,18 +40,3 @@ class scanner:
     #use the socket library to attempt to connect to a port; returns 0 if successful
     def port_scan(self, target_ip, portnum):
         return self.sock.connect_ex((target_ip, portnum))
-
-    #basic web enumeration; try enpoints and record the status codes that come back
-    def enumerate_endpoint(self, target_ip, endpoint_list):
-        """
-        Function for simple web enumeration given a target ip and
-        an endpoint list to iterate over
-        """
-        result = {}
-        for end in endpoint_list:
-            try:
-                resp = requests.get("http://" + target_ip + "/" + end)
-            except:
-                pass
-            result[end] = resp.status_code
-        return result
