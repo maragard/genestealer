@@ -26,10 +26,10 @@ class scanner:
             candidate = ip_mask + str(last)
             if candidate != ip_addr:
                 try:
-                    subprocess.check_call(['ping', '-c1', candidate])
+                    subprocess.check_call(['ping', '-c1', '-i0.1', candidate])
                 except:
                     pass
-                possible_targets.append(ip_mask + candidate)
+                possible_targets.append(candidate)
         return possible_targets
 
     def port_scan(self, target_ip, portnum):
