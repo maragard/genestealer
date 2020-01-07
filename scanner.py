@@ -5,10 +5,12 @@ import socket
 import subprocess
 import re
 import requests
+import concurrent.futures
 
 class scanner:
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.executor = concurrent.futures.ThreadPoolExecutor(254)
         return
 
     def get_self_ip(self):
@@ -21,15 +23,20 @@ class scanner:
 
     def ping_scan(self, ip_addr):
         possible_targets = []
-        ip_mask = '.'.join(ip_addr.split('.')[:-1]) + '.'
-        for last in range(1, 255):
-            candidate = ip_mask + str(last)
-            if candidate != ip_addr:
+        def ping_helper(self, candidate, self_ip):
+            nonlocal possible_targets
+            if candidate != self_ip:
                 try:
-                    subprocess.check_call(['ping', '-c1', '-i0.1', candidate])
+                    subprocess.check_output(['ping', '-c', '1', candidate])
+                    possible_targets.append(candidate)
                 except:
                     pass
-                possible_targets.append(candidate)
+
+        ip_mask = '.'.join(ip_addr.split('.')[:-1]) + '.'
+
+        candidates = [ip_mask + str(last) for last in range(1,255)]
+        ping_cands = [executor.submit(ping_helper, candidate=cand, self_ip=ip_addr) for cand in candidates]
+
         return possible_targets
 
     def port_scan(self, target_ip, portnum):
