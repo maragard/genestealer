@@ -4,9 +4,11 @@ import sys
 import socket
 import subprocess
 import re
+import requests
 
 class scanner:
     def __init__(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return 0
 
     def get_self_ip(self):
@@ -25,7 +27,20 @@ class scanner:
             if candidate != ip_addr:
                 try:
                     subprocess.check_call(['ping', '-c1', ip_mask + candidate])
-                    possible_targets.append(ip_mask + candidate)
                 except:
                     pass
+                possible_targets.append(ip_mask + candidate)
         return possible_targets
+
+    def port_scan(self, target_ip, portnum):
+        return self.sock.connect_ex((target_ip, portnum))
+
+    def enumerate_endpoint(self, target_ip, endpoint_list):
+        result = {}
+        for end in endpoint_list:
+            try:
+                resp = requests.get("http://" + target_ip + "/" + end)
+            except:
+                pass
+            result[end] = resp.status_code
+        return result
