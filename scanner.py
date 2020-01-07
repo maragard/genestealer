@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from os import system
 import sys
 import socket
 import subprocess
