@@ -32,7 +32,7 @@ def main():
     """
     Step 1: download assisting binaries - done
     Step 2: move to dir and unzip - done
-    Step 3: schedule attack binary - not done
+    Step 3: schedule attack binary - done
     """
     fetch_sources()
     #at this point we have everything in the current working directory
