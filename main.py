@@ -4,20 +4,24 @@ import argparse
 import pathlib
 from ipaddress import ip_address
 
+def attack(args):
+    #step 1 perform target ping scan
+    #step 2 perform target os detection
+    #step 3 perform target port scan on necessary ports
+    #step 4 pick and execute exploit
+    #step 5 post exploit (potentially repeat 2 thru 4 on all targets in sequence)
+
 def main():
     parser = argparse.ArgumentParser(prog="GENESTEALER")
     parser.add_argument('target',
-                        help="Initial target for worm",
-                        type=ip_address)
-    parser.add_argument('-i', '--ignore',
-                        help="IP addr(s) to ignore",
                         action='extend',
                         nargs='+',
-                        metavar='safe_ip',
+                        help="Initial target for worm",
                         type=ip_address)
 
     args = parser.parse_args()
     print(args)
+    attack(args)
 
 
 if __name__ == '__main__':
