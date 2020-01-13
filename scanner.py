@@ -31,7 +31,6 @@ class scanner:
         """
         Function to initiate an nmap ping scan on the immedate network of the attacking machine
         """
-        possible_targets = []
         #assume 24 bit netmask
         ip_mask = '.'.join(ip_addr.split('.')[:-1]) + '.0/24'
         cmd = ['nmap', '-sn', ip_mask]
@@ -40,3 +39,12 @@ class scanner:
     #use the socket library to attempt to connect to a port; returns 0 if successful
     def port_scan(self, target_ip, portnum):
         return self.sock.connect_ex((target_ip, portnum))
+
+    def os_scan(self, target_ip):
+        """
+        Function to run a quick nmap OS detection scan
+        """
+        cmd = ['nmap', '-O', target_ip]
+        output = subprocess.check_output(' '.join(cmd), shell=True)
+        #OS info in most human readable format occurs 6 lines from the bottom
+        sysline = output.decode('utf-8').split('\n')[-6]

