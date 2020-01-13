@@ -1,5 +1,7 @@
+# GENESTEALER
+
 A worm exploiting CVE-2014-6271/6278 (Shellshock) & CVE-2017-0148 (EternalBlue)
 
-Developed by Marcus Agard (Primarch19) & Robert T. Unnold (Techmarine Martellus)
+Developed by Marcus Agard & Robert T. Unnold
 
-DISCLAIMER: THIS CODE IS FOR EDUCATIONAL PURPOSES ONLY
+Link to presentation
