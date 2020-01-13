@@ -3,6 +3,7 @@
 import argparse
 import pathlib
 from ipaddress import ip_address
+from shocker import shockshell
 
 def main():
     parser = argparse.ArgumentParser(prog="GENESTEALER")
