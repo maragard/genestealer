@@ -15,7 +15,7 @@ $repeat = (New-TimeSpan -Minutes 15)
 $action = New-ScheduledTaskAction –Execute "$pshome\powershell.exe" -Argument  "$script; quit"
 $duration = ([timeSpan]::maxvalue)
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).Date -RepetitionInterval $repeat -RepetitionDuration $duration
-Register-ScheduledTask -TaskName $jobname -Action $action -Trigger $trigger -RunLevel Highest -User $username -Password $password -Settings $settings
+Register-ScheduledTask -TaskName $jobname -Action $action -Trigger $trigger
 
 # Download and place calling card
 $cardurl = "https://vignette.wikia.nocookie.net/warhammer40k/images/e/e7/Genestealer_Cultists_rise.jpg/"
