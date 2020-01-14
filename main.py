@@ -70,6 +70,8 @@ def main():
             curr_box = nmap.get_self_ip()
             print("Identifying targets...")
             victims = nmap.ping_scan(curr_box)
+            if victims is [] or victims is None:
+                print("Found no one to pwn :(")
             for victim in victims:
                 attack(victim)
 
