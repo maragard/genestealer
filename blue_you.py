@@ -993,13 +993,16 @@ def service_exec(conn, cmd):
 
 	rpcsvc.disconnect()
 
+def main():
+	if len(sys.argv) < 2:
+		print("{} <ip> [pipe_name]".format(sys.argv[0]))
+		sys.exit(1)
 
-if len(sys.argv) < 2:
-	print("{} <ip> [pipe_name]".format(sys.argv[0]))
-	sys.exit(1)
+	target = sys.argv[1]
+	pipe_name = None if len(sys.argv) < 3 else sys.argv[2]
 
-target = sys.argv[1]
-pipe_name = None if len(sys.argv) < 3 else sys.argv[2]
+	exploit(target, pipe_name)
+	print('Done')
 
-exploit(target, pipe_name)
-print('Done')
+if __name__ == '__main__':
+	main()
