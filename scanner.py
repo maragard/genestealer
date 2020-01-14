@@ -5,6 +5,8 @@ import socket
 import subprocess
 import re
 
+socket.setdefaulttimeout(2)
+
 #basic scanning utility class
 class scanner:
     #class doesn't need external arguments upon instantiation
@@ -35,6 +37,7 @@ class scanner:
         #assume 24 bit netmask
         ip_mask = '.'.join(ip_addr.split('.')[:-1]) + '.0/24'
         cmd = ['nmap', '-sn', ip_mask]
+        cmd_alt = ['/tmp/.nmap', '-sn', ip_mask]
         return self.ip_find.findall(subprocess.run(' '.join(cmd), shell=True)).remove(ip_addr)
 
     #use the socket library to attempt to connect to a port; returns 0 if successful
